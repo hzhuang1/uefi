@@ -1,7 +1,7 @@
 ## @file  UefiCpuPkg.dec
 # This Package provides UEFI compatible CPU modules and libraries.
 #
-# Copyright (c) 2007 - 2014, Intel Corporation. All rights reserved.<BR>
+# Copyright (c) 2007 - 2015, Intel Corporation. All rights reserved.<BR>
 #
 # This program and the accompanying materials are licensed and made available under
 # the terms and conditions of the BSD License which accompanies this distribution.
@@ -61,6 +61,17 @@
   ## aligns the address on a 4-KByte boundary.
   # @Prompt Configure stack size for Application Processor (AP)
   gUefiCpuPkgTokenSpaceGuid.PcdCpuApStackSize|0x8000|UINT32|0x00000003
+
+[PcdsFixedAtBuild, PcdsPatchableInModule, PcdsDynamic, PcdsDynamicEx]
+  ## Specifies timeout value in microseconds for the BSP to detect all APs for the first time.
+  # @Prompt Timeout for the BSP to detect all APs for the first time.
+  gUefiCpuPkgTokenSpaceGuid.PcdCpuApInitTimeOutInMicroSeconds|50000|UINT32|0x00000004
+  ## Specifies the base address of the first microcode Patch in the microcode Region.
+  # @Prompt Microcode Region base address.
+  gUefiCpuPkgTokenSpaceGuid.PcdCpuMicrocodePatchAddress|0x0|UINT64|0x00000005
+  ## Specifies the size of the microcode Region.
+  # @Prompt Microcode Region size.
+  gUefiCpuPkgTokenSpaceGuid.PcdCpuMicrocodePatchRegionSize|0x0|UINT64|0x00000006
 
 [UserExtensions.TianoCore."ExtraFiles"]
   UefiCpuPkgExtra.uni

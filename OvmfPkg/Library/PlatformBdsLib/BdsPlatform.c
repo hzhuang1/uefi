@@ -116,49 +116,27 @@ Returns:
 
 
 EFI_STATUS
+EFIAPI
 ConnectRootBridge (
-  VOID
+  IN EFI_HANDLE  RootBridgeHandle,
+  IN VOID        *Instance,
+  IN VOID        *Context
   )
-/*++
-
-Routine Description:
-
-  Connect RootBridge
-
-Arguments:
-
-  None.
-
-Returns:
-
-  EFI_SUCCESS             - Connect RootBridge successfully.
-  EFI_STATUS              - Connect RootBridge fail.
-
---*/
 {
-  EFI_STATUS                Status;
-  EFI_HANDLE                RootHandle;
+  EFI_STATUS Status;
 
   //
-  // Make all the PCI_IO protocols on PCI Seg 0 show up
+  // Make the PCI bus driver connect the root bridge, non-recursively. This
+  // will produce a number of child handles with PciIo on them.
   //
-  BdsLibConnectDevicePath (gPlatformRootBridges[0]);
-
-  Status = gBS->LocateDevicePath (
-                  &gEfiDevicePathProtocolGuid,
-                  &gPlatformRootBridges[0],
-                  &RootHandle
+  Status = gBS->ConnectController (
+                  RootBridgeHandle, // ControllerHandle
+                  NULL,             // DriverImageHandle
+                  NULL,             // RemainingDevicePath -- produce all
+                                    //   children
+                  FALSE             // Recursive
                   );
-  if (EFI_ERROR (Status)) {
-    return Status;
-  }
-
-  Status = gBS->ConnectController (RootHandle, NULL, NULL, FALSE);
-  if (EFI_ERROR (Status)) {
-    return Status;
-  }
-
-  return EFI_SUCCESS;
+  return Status;
 }
 
 
@@ -749,10 +727,12 @@ SetPciIntLine (
   )
 {
   EFI_DEVICE_PATH_PROTOCOL  *DevPathNode;
+  EFI_DEVICE_PATH_PROTOCOL  *DevPath;
   UINTN                     RootSlot;
   UINTN                     Idx;
   UINT8                     IrqLine;
   EFI_STATUS                Status;
+  UINT32                    RootBusNumber;
 
   Status = EFI_SUCCESS;
 
@@ -760,6 +740,14 @@ SetPciIntLine (
 
     DevPathNode = DevicePathFromHandle (Handle);
     ASSERT (DevPathNode != NULL);
+    DevPath = DevPathNode;
+
+    RootBusNumber = 0;
+    if (DevicePathType (DevPathNode) == ACPI_DEVICE_PATH &&
+        DevicePathSubType (DevPathNode) == ACPI_DP &&
+        ((ACPI_HID_DEVICE_PATH *)DevPathNode)->HID == EISA_PNP_ID(0x0A03)) {
+      RootBusNumber = ((ACPI_HID_DEVICE_PATH *)DevPathNode)->UID;
+    }
 
     //
     // Compute index into PciHostIrqs[] table by walking
@@ -792,7 +780,7 @@ SetPciIntLine (
     if (EFI_ERROR (Status)) {
       return Status;
     }
-    if (RootSlot == 0) {
+    if (RootBusNumber == 0 && RootSlot == 0) {
       DEBUG((
         EFI_D_ERROR,
         "%a: PCI host bridge (00:00.0) should have no interrupts!\n",
@@ -831,6 +819,29 @@ SetPciIntLine (
     }
     Idx %= ARRAY_SIZE (PciHostIrqs);
     IrqLine = PciHostIrqs[Idx];
+
+    DEBUG_CODE_BEGIN ();
+    {
+      CHAR16        *DevPathString;
+      STATIC CHAR16 Fallback[] = L"<failed to convert>";
+      UINTN         Segment, Bus, Device, Function;
+
+      DevPathString = ConvertDevicePathToText (DevPath, FALSE, FALSE);
+      if (DevPathString == NULL) {
+        DevPathString = Fallback;
+      }
+      Status = PciIo->GetLocation (PciIo, &Segment, &Bus, &Device, &Function);
+      ASSERT_EFI_ERROR (Status);
+
+      DEBUG ((EFI_D_VERBOSE, "%a: [%02x:%02x.%x] %s -> 0x%02x\n", __FUNCTION__,
+        (UINT32)Bus, (UINT32)Device, (UINT32)Function, DevPathString,
+        IrqLine));
+
+      if (DevPathString != Fallback) {
+        FreePool (DevPathString);
+      }
+    }
+    DEBUG_CODE_END ();
 
     //
     // Set PCI Interrupt Line register for this device to PciHostIrqs[Idx]
@@ -1189,7 +1200,8 @@ Returns:
 
   DEBUG ((EFI_D_INFO, "PlatformBdsPolicyBehavior\n"));
 
-  ConnectRootBridge ();
+  VisitAllInstancesOfProtocol (&gEfiPciRootBridgeIoProtocolGuid,
+    ConnectRootBridge, NULL);
 
   if (PcdGetBool (PcdOvmfFlashVariablesEnable)) {
     DEBUG ((EFI_D_INFO, "PlatformBdsPolicyBehavior: not restoring NvVars "

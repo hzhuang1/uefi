@@ -191,7 +191,7 @@
   gEfiMdePkgTokenSpaceGuid.PcdUartDefaultParity|1
   gEfiMdePkgTokenSpaceGuid.PcdUartDefaultStopBits|1
 
-  gEfiMdeModulePkgTokenSpaceGuid.PcdFirmwareVersionString|L"D02 BIOS LINARO B902"
+  gEfiMdeModulePkgTokenSpaceGuid.PcdFirmwareVersionString|L"D02 BIOS LINARO B905"
 
   gHwTokenSpaceGuid.PcdSystemProductName|L"D02"
   gHwTokenSpaceGuid.PcdSystemVersion|L"LINARO"
@@ -468,6 +468,13 @@
   MdeModulePkg/Bus/Ata/AtaBusDxe/AtaBusDxe.inf
 
   #HwPkg/Pcie/PcieInitDxe.inf
+
+  #
+  # USB Support
+  #
+  HwPkg/Drivers/EhciDxe/EhciDxe.inf
+  MdeModulePkg/Bus/Usb/UsbBusDxe/UsbBusDxe.inf
+  MdeModulePkg/Bus/Usb/UsbMassStorageDxe/UsbMassStorageDxe.inf
 
   # ¡¾HRD ARM PV660 V100R001C00B010 BIOS¡¿SmbisoÄ£¿é
   MdeModulePkg/Universal/SmbiosDxe/SmbiosDxe.inf

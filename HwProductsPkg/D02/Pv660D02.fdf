@@ -277,7 +277,12 @@ READ_LOCK_STATUS   = TRUE
   # UEFI application (Shell Embedded Boot Loader)
   #
   INF HwPkg/Override/EmbeddedPkg/Ebl/Ebl.inf
-  INF ShellBinPkg/UefiShell/UefiShell.inf
+
+  #
+  # Build Shell from latest source code instead of prebuilt binary
+  #
+  #INF ShellBinPkg/UefiShell/UefiShell.inf
+  INF ShellPkg/Application/Shell/Shell.inf
 
   #
   # Bds

@@ -362,6 +362,8 @@
   gEfiMdeModulePkgTokenSpaceGuid.PcdSetupVideoVerticalResolution|480
 
   gEfiMdeModulePkgTokenSpaceGuid.PcdSmbiosVersion|0x0208
+  gEfiMdeModulePkgTokenSpaceGuid.PcdSmbiosDocRev|0x0
+  gUefiOvmfPkgTokenSpaceGuid.PcdQemuSmbiosValidated|FALSE
 
 ################################################################################
 #
@@ -504,7 +506,10 @@
   #
   # SMBIOS Support
   #
-  MdeModulePkg/Universal/SmbiosDxe/SmbiosDxe.inf
+  MdeModulePkg/Universal/SmbiosDxe/SmbiosDxe.inf {
+    <LibraryClasses>
+      NULL|OvmfPkg/Library/SmbiosVersionLib/DetectSmbiosVersionLib.inf
+  }
   OvmfPkg/SmbiosPlatformDxe/SmbiosPlatformDxe.inf
 
   #

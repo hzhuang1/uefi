@@ -280,6 +280,7 @@
 
   MdeModulePkg/Universal/BdsDxe/BdsDxe.inf
   MdeModulePkg/Application/BootManagerMenuApp/BootManagerMenuApp.inf
+  MdeModulePkg/Application/UiApp/UiApp.inf
   MdeModulePkg/Universal/DriverHealthManagerDxe/DriverHealthManagerDxe.inf
   MdeModulePkg/Universal/BootManagerPolicyDxe/BootManagerPolicyDxe.inf
   MdeModulePkg/Universal/CapsulePei/CapsulePei.inf
@@ -394,3 +395,7 @@
   MdeModulePkg/Universal/Acpi/FirmwarePerformanceDataTableSmm/FirmwarePerformanceSmm.inf
   MdeModulePkg/Universal/FaultTolerantWriteDxe/FaultTolerantWriteSmm.inf
   MdeModulePkg/Universal/FaultTolerantWriteDxe/FaultTolerantWriteSmmDxe.inf
+
+[Components.X64]
+  MdeModulePkg/Universal/CapsulePei/CapsuleX64.inf
+

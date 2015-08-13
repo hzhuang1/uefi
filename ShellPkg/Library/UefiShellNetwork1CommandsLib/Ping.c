@@ -18,7 +18,7 @@
 
 #define PING_IP4_COPY_ADDRESS(Dest, Src) (CopyMem ((Dest), (Src), sizeof (EFI_IPv4_ADDRESS)))
 
-UINT64          CurrentTick = 0;
+UINT64          mCurrentTick = 0;
 
 //
 // Function templates to match the IPv4 and IPv6 commands that we use.
@@ -235,16 +235,16 @@ ReadTime (
 
   ASSERT (gCpu != NULL);
 
-  Status = gCpu->GetTimerValue (gCpu, 0, &CurrentTick, &TimerPeriod);
+  Status = gCpu->GetTimerValue (gCpu, 0, &mCurrentTick, &TimerPeriod);
   if (EFI_ERROR (Status)) {
     //
     // The WinntGetTimerValue will return EFI_UNSUPPORTED. Set the
     // TimerPeriod by ourselves.
     //
-    CurrentTick += 1000000;
+    mCurrentTick += 1000000;
   }
   
-  return CurrentTick;
+  return mCurrentTick;
 }
 
 
@@ -598,8 +598,7 @@ PingGenerateToken (
   //
   Request->Type        = (UINT8)(Private->IpChoice==PING_IP_CHOICE_IP6?ICMP_V6_ECHO_REQUEST:ICMP_V4_ECHO_REQUEST);
   Request->Code        = 0;
-  Request->SequenceNum = SequenceNum;
-  Request->TimeStamp   = TimeStamp; 
+  Request->SequenceNum = SequenceNum; 
   Request->Identifier  = 0;
   Request->Checksum    = 0;
 
@@ -607,6 +606,7 @@ PingGenerateToken (
   // Assembly token for transmit.
   //
   if (Private->IpChoice==PING_IP_CHOICE_IP6) {
+    Request->TimeStamp   = TimeStamp;
     ((EFI_IP6_TRANSMIT_DATA*)TxData)->ExtHdrsLength                   = 0;
     ((EFI_IP6_TRANSMIT_DATA*)TxData)->ExtHdrs                         = NULL;
     ((EFI_IP6_TRANSMIT_DATA*)TxData)->OverrideData                    = 0;
@@ -628,6 +628,7 @@ PingGenerateToken (
     ((EFI_IP4_TRANSMIT_DATA*)TxData)->DestinationAddress.Addr[3]      = Private->DstAddress[3];
 
     HeadSum = NetChecksum ((UINT8 *) Request, Private->BufferSize);
+    Request->TimeStamp   = TimeStamp;
     TempChecksum = NetChecksum ((UINT8 *) &Request->TimeStamp, sizeof (UINT64));
     Request->Checksum = (UINT16)(~NetAddChecksum (HeadSum, TempChecksum));
   }

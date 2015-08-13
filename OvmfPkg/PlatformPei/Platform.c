@@ -32,11 +32,9 @@
 #include <Library/PeiServicesLib.h>
 #include <Library/QemuFwCfgLib.h>
 #include <Library/ResourcePublicationLib.h>
-#include <Library/BaseMemoryLib.h>
 #include <Guid/MemoryTypeInformation.h>
 #include <Ppi/MasterBootMode.h>
 #include <IndustryStandard/Pci22.h>
-#include <IndustryStandard/SmBios.h>
 #include <OvmfPlatforms.h>
 
 #include "Platform.h"
@@ -365,7 +363,7 @@ DebugDumpCmos (
   VOID
   )
 {
-  UINTN  Loop;
+  UINT32 Loop;
 
   DEBUG ((EFI_D_INFO, "CMOS:\n"));
 
@@ -378,41 +376,6 @@ DebugDumpCmos (
       DEBUG ((EFI_D_INFO, "\n"));
     }
   }
-}
-
-
-/**
-  Set the SMBIOS entry point version for the generic SmbiosDxe driver.
-**/
-STATIC
-VOID
-SmbiosVersionInitialization (
-  VOID
-  )
-{
-  FIRMWARE_CONFIG_ITEM     Anchor;
-  UINTN                    AnchorSize;
-  SMBIOS_TABLE_ENTRY_POINT QemuAnchor;
-  UINT16                   SmbiosVersion;
-
-  if (RETURN_ERROR (QemuFwCfgFindFile ("etc/smbios/smbios-anchor", &Anchor,
-                      &AnchorSize)) ||
-      AnchorSize != sizeof QemuAnchor) {
-    return;
-  }
-
-  QemuFwCfgSelectItem (Anchor);
-  QemuFwCfgReadBytes (AnchorSize, &QemuAnchor);
-  if (CompareMem (QemuAnchor.AnchorString, "_SM_", 4) != 0 ||
-      CompareMem (QemuAnchor.IntermediateAnchorString, "_DMI_", 5) != 0) {
-    return;
-  }
-
-  SmbiosVersion = (UINT16)(QemuAnchor.MajorVersion << 8 |
-                           QemuAnchor.MinorVersion);
-  DEBUG ((EFI_D_INFO, "%a: SMBIOS version from QEMU: 0x%04x\n", __FUNCTION__,
-    SmbiosVersion));
-  PcdSet16 (PcdSmbiosVersion, SmbiosVersion);
 }
 
 
@@ -466,8 +429,6 @@ InitializePlatform (
     PeiFvInitialization ();
 
     MemMapInitialization ();
-
-    SmbiosVersionInitialization ();
   }
 
   MiscInitialization ();

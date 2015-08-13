@@ -309,6 +309,9 @@
   ## Include/Guid/TtyTerm.h
   gEfiTtyTermGuid                = { 0x7d916d80, 0x5bb1, 0x458c, {0xa4, 0x8f, 0xe2, 0x5f, 0xdd, 0x51, 0xef, 0x94 }}
 
+  ## Include/Guid/HiiBootMaintenanceFormset.h
+  gEfiIfrBootMaintenanceGuid      = { 0xb2dedc91, 0xd59f, 0x48d2, { 0x89, 0x8a, 0x12, 0x49, 0xc, 0x74, 0xa4, 0xe0 }}
+  
 [Ppis]
   ## Include/Ppi/AtaController.h
   gPeiAtaControllerPpiGuid       = { 0xa45e60d1, 0xc719, 0x44aa, { 0xb0, 0x7a, 0xaa, 0x77, 0x7f, 0x85, 0x90, 0x6d }}
@@ -886,6 +889,13 @@
   # @Prompt Shadow Peim On S3 Boot. 
   gEfiMdeModulePkgTokenSpaceGuid.PcdShadowPeimOnS3Boot|FALSE|BOOLEAN|0x30001028
 
+  ## Indicates if to shadow PEIM and PeiCore after memory is ready.<BR><BR>
+  #  This PCD is used on other boot path except for S3 boot. 
+  #   TRUE  - Shadow PEIM and PeiCore after memory is ready.<BR>
+  #   FALSE - Not shadow PEIM after memory is ready.<BR>
+  # @Prompt Shadow Peim and PeiCore on boot
+  gEfiMdeModulePkgTokenSpaceGuid.PcdShadowPeimOnBoot|TRUE|BOOLEAN|0x30001029
+
   ## The mask is used to control memory profile behavior.<BR><BR>
   #  BIT0 - Enable UEFI memory profile.<BR>
   #  BIT1 - Enable SMRAM profile.<BR>
@@ -938,17 +948,28 @@
   
   ## This PCD points to the file name GUID of the BootManagerMenuApp
   #  Platform can customize the PCD to point to different application for Boot Manager Menu
+  # @Prompt Boot Manager Menu File
   gEfiMdeModulePkgTokenSpaceGuid.PcdBootManagerMenuFile|{ 0xdc, 0x5b, 0xc2, 0xee, 0xf2, 0x67, 0x95, 0x4d, 0xb1, 0xd5, 0xf8, 0x1b, 0x20, 0x39, 0xd1, 0x1d }|VOID*|0x0001006b
 
   ## This PCD points to the formset GUID of the driver health management form
   #  The form will be popped up by BDS core when there are Configuration Required driver health intances.
   #  Platform can customize the PCD to point to different formset.
+  # @Prompt Driver Health Management Form
   gEfiMdeModulePkgTokenSpaceGuid.PcdDriverHealthConfigureForm|{ 0xf4, 0xd9, 0x96, 0x42, 0xfc, 0xf6, 0xde, 0x4d, 0x86, 0x85, 0x8c, 0xe2, 0xd7, 0x9d, 0x90, 0xf0 }|VOID*|0x0001006c
 
   ## The number of bytes between registers in serial device.  The default is 1 byte.
   # @Prompt Serial Port Register Stride in Bytes
   gEfiMdeModulePkgTokenSpaceGuid.PcdSerialRegisterStride|1|UINT32|0x0001006d
-  
+
+  ## Indicates if to set NX for stack.<BR><BR>
+  #  For the DxeIpl and the DxeCore are both X64, set NX for stack feature also require PcdDxeIplBuildPageTables be TRUE.<BR>
+  #  For the DxeIpl and the DxeCore are both IA32 (PcdDxeIplSwitchToLongMode is FALSE), set NX for stack feature also require
+  #  IA32 PAE is supported and Execute Disable Bit is available.<BR>
+  #   TRUE  - to set NX for stack.<BR>
+  #   FALSE - Not to set NX for stack.<BR>
+  # @Prompt Set NX for stack.
+  gEfiMdeModulePkgTokenSpaceGuid.PcdSetNxForStack|FALSE|BOOLEAN|0x0001006f
+
 [PcdsPatchableInModule, PcdsDynamic, PcdsDynamicEx]
   ## This PCD defines the Console output row. The default value is 25 according to UEFI spec.
   #  This PCD could be set to 0 then console output would be at max column and max row.
@@ -1000,6 +1021,7 @@
 
   ## This PCD points to the front page formset GUID
   #  Compare the FormsetGuid or ClassGuid with this PCD value can detect whether in front page
+  # @Prompt Front Page Formset.
   gEfiMdeModulePkgTokenSpaceGuid.PcdFrontPageFormSetGuid|{ 0xbc, 0x30, 0x0c, 0x9e,0x06, 0x3f, 0xa6, 0x4b, 0x82, 0x88, 0x9, 0x17, 0x9b, 0x85, 0x5d, 0xbe }|VOID*|0x0001006e
 
   ## Base address of the NV variable range in flash device.

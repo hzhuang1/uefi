@@ -388,6 +388,9 @@
 
   ## Include/Guid/MemoryOverwriteControl.h
   gEfiMemoryOverwriteControlDataGuid = { 0xe20939be, 0x32d4, 0x41be, {0xa1, 0x50, 0x89, 0x7f, 0x85, 0xd4, 0x98, 0x29 }}
+  
+  ## Include/IndustryStandard/MemoryOverwriteRequestControlLock.h
+  gEfiMemoryOverwriteRequestControlLockGuid = { 0xBB983CCF, 0x151D, 0x40E1, {0xA0, 0x7B, 0x4A, 0x17, 0xBE, 0x16, 0x82, 0x92}}
 
   ## Include/Guid/WinCertificate.h
   gEfiCertTypeRsa2048Sha256Guid = { 0xa7717414, 0xc616, 0x4977, {0x94, 0x20, 0x84, 0x47, 0x12, 0xa7, 0x35, 0xbf }}
@@ -2012,8 +2015,9 @@
   #  1 - VT100<BR>
   #  2 - VT100+<BR>
   #  3 - UTF8<BR>
+  #  4 - TTYTERM, NOT defined in UEFI SPEC<BR>
   # @Prompt Default Terminal Type.
-  # @ValidRange 0x80000001 | 0 - 3
+  # @ValidRange 0x80000001 | 0 - 4
   gEfiMdePkgTokenSpaceGuid.PcdDefaultTerminalType|0|UINT8|0x00000024
 
   ## Error level for hardware recorder.

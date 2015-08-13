@@ -169,13 +169,9 @@ READ_LOCK_STATUS   = TRUE
   # Bds
   #
   INF MdeModulePkg/Universal/DevicePathDxe/DevicePathDxe.inf
-!if $(INTEL_BDS) == TRUE
   INF MdeModulePkg/Universal/DisplayEngineDxe/DisplayEngineDxe.inf
   INF MdeModulePkg/Universal/SetupBrowserDxe/SetupBrowserDxe.inf
   INF IntelFrameworkModulePkg/Universal/BdsDxe/BdsDxe.inf
-!else
-  INF ArmPlatformPkg/Bds/Bds.inf
-!endif
 
   #
   # Networking stack
@@ -197,6 +193,12 @@ READ_LOCK_STATUS   = TRUE
   #
   INF MdeModulePkg/Bus/Scsi/ScsiBusDxe/ScsiBusDxe.inf
   INF MdeModulePkg/Bus/Scsi/ScsiDiskDxe/ScsiDiskDxe.inf
+
+  #
+  # SMBIOS Support
+  #
+  INF MdeModulePkg/Universal/SmbiosDxe/SmbiosDxe.inf
+  INF OvmfPkg/SmbiosPlatformDxe/SmbiosPlatformDxe.inf
 
   #
   # ACPI Support
@@ -226,13 +228,16 @@ READ_LOCK_STATUS   = TRUE
   INF MdeModulePkg/Bus/Usb/UsbBusDxe/UsbBusDxe.inf
   INF MdeModulePkg/Bus/Usb/UsbKbDxe/UsbKbDxe.inf
 
-!if $(INTEL_BDS) == TRUE
   #
   # TianoCore logo (splash screen)
   #
   FILE FREEFORM = PCD(gEfiIntelFrameworkModulePkgTokenSpaceGuid.PcdLogoFile) {
     SECTION RAW = MdeModulePkg/Logo/Logo.bmp
   }
+
+!if $(ARCH) == ARM
+  INF MdeModulePkg/Universal/FvSimpleFileSystemDxe/FvSimpleFileSystemDxe.inf
+  INF ArmPkg/Application/LinuxLoader/LinuxLoader.inf
 !endif
 
 [FV.FVMAIN_COMPACT]
@@ -301,20 +306,20 @@ READ_LOCK_STATUS   = TRUE
 ############################################################################
 
 [Rule.Common.SEC]
-  FILE SEC = $(NAMED_GUID) RELOCS_STRIPPED {
-    TE  TE Align = 128                  $(INF_OUTPUT)/$(MODULE_NAME).efi
+  FILE SEC = $(NAMED_GUID) RELOCS_STRIPPED FIXED {
+    TE  TE Align = Auto                 $(INF_OUTPUT)/$(MODULE_NAME).efi
   }
 
 [Rule.Common.PEI_CORE]
-  FILE PEI_CORE = $(NAMED_GUID) {
-    TE     TE Align = 8                 $(INF_OUTPUT)/$(MODULE_NAME).efi
+  FILE PEI_CORE = $(NAMED_GUID) FIXED {
+    TE     TE Align = Auto              $(INF_OUTPUT)/$(MODULE_NAME).efi
     UI     STRING ="$(MODULE_NAME)" Optional
   }
 
 [Rule.Common.PEIM]
-  FILE PEIM = $(NAMED_GUID) {
+  FILE PEIM = $(NAMED_GUID) FIXED {
      PEI_DEPEX PEI_DEPEX Optional       $(INF_OUTPUT)/$(MODULE_NAME).depex
-     TE       TE Align = 8              $(INF_OUTPUT)/$(MODULE_NAME).efi
+     TE       TE Align = Auto           $(INF_OUTPUT)/$(MODULE_NAME).efi
      UI       STRING="$(MODULE_NAME)" Optional
   }
 

@@ -18,7 +18,7 @@
   DEFINE TTY_TERMINAL            = FALSE
 
 [BuildOptions.AARCH64.EDKII.DXE_RUNTIME_DRIVER]
-  GCC:*_*_AARCH64_DLINK_FLAGS = --script=$(EDK_TOOLS_PATH)/Scripts/gcc-aarch64-64K-align-ld-script
+  GCC:*_*_AARCH64_DLINK_FLAGS = -z common-page-size=0x10000
 
 [LibraryClasses.common]
 !if $(TARGET) == RELEASE
@@ -76,6 +76,7 @@
   ArmDisassemblerLib|ArmPkg/Library/ArmDisassemblerLib/ArmDisassemblerLib.inf
   DmaLib|ArmPkg/Library/ArmDmaLib/ArmDmaLib.inf
   ArmGicLib|ArmPkg/Drivers/ArmGic/ArmGicLib.inf
+  ArmGicArchLib|ArmVirtPkg/Library/ArmVirtGicArchLib/ArmVirtGicArchLib.inf
   ArmPlatformStackLib|ArmPlatformPkg/Library/ArmPlatformStackLib/ArmPlatformStackLib.inf
   ArmSmcLib|ArmPkg/Library/ArmSmcLib/ArmSmcLib.inf
   ArmHvcLib|ArmPkg/Library/ArmHvcLib/ArmHvcLib.inf
@@ -105,8 +106,7 @@
   DebugAgentLib|MdeModulePkg/Library/DebugAgentLibNull/DebugAgentLibNull.inf
   DebugAgentTimerLib|EmbeddedPkg/Library/DebugAgentTimerLibNull/DebugAgentTimerLibNull.inf
 
-  # BDS Libraries
-  BdsLib|ArmPkg/Library/BdsLib/BdsLib.inf
+  # Flattened Device Tree (FDT) access library
   FdtLib|EmbeddedPkg/Library/FdtLib/FdtLib.inf
 
   # PCI Libraries
@@ -206,6 +206,9 @@
   PerformanceLib|MdeModulePkg/Library/DxePerformanceLib/DxePerformanceLib.inf
   MemoryAllocationLib|MdePkg/Library/UefiMemoryAllocationLib/UefiMemoryAllocationLib.inf
   HiiLib|MdeModulePkg/Library/UefiHiiLib/UefiHiiLib.inf
+  ShellLib|ShellPkg/Library/UefiShellLib/UefiShellLib.inf
+  FileHandleLib|MdePkg/Library/UefiFileHandleLib/UefiFileHandleLib.inf
+  SortLib|MdeModulePkg/Library/UefiSortLib/UefiSortLib.inf
 
 [LibraryClasses.common.UEFI_DRIVER]
   ReportStatusCodeLib|IntelFrameworkModulePkg/Library/DxeReportStatusCodeLibFramework/DxeReportStatusCodeLib.inf
@@ -278,8 +281,6 @@
   gEfiMdeModulePkgTokenSpaceGuid.PcdTurnOffUsbLegacySupport|TRUE
 
 [PcdsFixedAtBuild.common]
-  gArmPlatformTokenSpaceGuid.PcdFirmwareVendor|"ARM Virtualization Platform"
-
   gEfiMdePkgTokenSpaceGuid.PcdMaximumUnicodeStringLength|1000000
   gEfiMdePkgTokenSpaceGuid.PcdMaximumAsciiStringLength|1000000
   gEfiMdePkgTokenSpaceGuid.PcdMaximumLinkedListLength|1000000
@@ -398,9 +399,6 @@
       NULL|ShellPkg/Library/UefiShellInstall1CommandsLib/UefiShellInstall1CommandsLib.inf
       NULL|ShellPkg/Library/UefiShellNetwork1CommandsLib/UefiShellNetwork1CommandsLib.inf
       HandleParsingLib|ShellPkg/Library/UefiHandleParsingLib/UefiHandleParsingLib.inf
-      ShellLib|ShellPkg/Library/UefiShellLib/UefiShellLib.inf
-      FileHandleLib|MdePkg/Library/UefiFileHandleLib/UefiFileHandleLib.inf
-      SortLib|MdeModulePkg/Library/UefiSortLib/UefiSortLib.inf
       PrintLib|MdePkg/Library/BasePrintLib/BasePrintLib.inf
       BcfgCommandLib|ShellPkg/Library/UefiShellBcfgCommandLib/UefiShellBcfgCommandLib.inf
 

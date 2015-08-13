@@ -58,6 +58,8 @@
   PlatformBdsLib|ArmPlatformPkg/Library/PlatformIntelBdsLib/PlatformIntelBdsLib.inf
   CustomizedDisplayLib|MdeModulePkg/Library/CustomizedDisplayLib/CustomizedDisplayLib.inf
 
+  BdsLib|ArmPkg/Library/BdsLib/BdsLib.inf
+
 [LibraryClasses.common.UEFI_DRIVER]
   UefiScsiLib|MdePkg/Library/UefiScsiLib/UefiScsiLib.inf
 
@@ -79,7 +81,6 @@
 ################################################################################
 
 [PcdsFixedAtBuild.common]
-  gArmPlatformTokenSpaceGuid.PcdFirmwareVendor|"XEN-UEFI"
   gEfiMdeModulePkgTokenSpaceGuid.PcdFirmwareVersionString|L"$(FIRMWARE_VER)"
 
   gArmPlatformTokenSpaceGuid.PcdCoreCount|1
@@ -127,6 +128,7 @@
   gArmTokenSpaceGuid.PcdGicDistributorBase|0x0
   gArmTokenSpaceGuid.PcdGicRedistributorsBase|0x0
   gArmTokenSpaceGuid.PcdGicInterruptInterfaceBase|0x0
+  gArmVirtTokenSpaceGuid.PcdArmGicRevision|0x0
 
   ## PL031 RealTimeClock
   gArmPlatformTokenSpaceGuid.PcdPL031RtcBase|0x0
